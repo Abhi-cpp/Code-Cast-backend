@@ -46,4 +46,11 @@ router.get('/users/jwt', auth, async (req, res) => {
     })
 })
 
+router.post('/code', async (req, res) => {
+    console.log(req.body)
+    res.send("Thx for sending data")
+})
+
+
+
 module.exports = router
