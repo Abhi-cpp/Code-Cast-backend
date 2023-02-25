@@ -15,7 +15,7 @@ const httpServer = createServer(app);
 
 const io = new Server(httpServer, {
     cors: {
-        origin: process.env.FRONTEND_URL,
+        origin: "*",
     }
 });
 
@@ -35,7 +35,9 @@ io.on("connect", onConnection);
 app.use(cors());
 app.use(express.json());
 app.use(userRouter);
-
+app.use('/', (req, res) => {
+    res.send("server is up and running")
+})
 
 
 DBConnect().then(() => {
