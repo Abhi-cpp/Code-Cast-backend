@@ -1,11 +1,12 @@
 const mongoose = require('mongoose');
 require('dotenv').config()
-
-const url = 'mongodb+srv://pizza-shop:' + process.env.dbpw + '@cluster0.mlzimeo.mongodb.net/code-editor?retryWrites=true&w=majority';
+mongoose.set('strictQuery', true);
+const url = process.env.DB_URL;
 const DBConnect = async () => {
     try {
         await mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true });
     } catch (err) {
+        console.log("DB connection error", err);
         process.exit(1);
     }
 }

@@ -13,7 +13,7 @@ const roomSchema = new mongoose.Schema({
         required: true,
         trim: true,
     }
-    //* iske baad webRTC, editor data ayega
+    //* iske baad editor data ayega
 }, {
     timestamps: true
 });

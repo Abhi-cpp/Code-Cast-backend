@@ -1,12 +1,12 @@
 const express = require('express');
 const DBConnect = require('./DB/connect');
-require('dotenv').config()
-const port = process.env.PORT || 1234;
-const userRouter = require('./Routes/userRoutes')
 const codeRouter = require('./Routes/codeRouter')
-var cors = require('cors');
+const userRouter = require('./Routes/userRoutes')
 const { createServer } = require("http");
 const { Server } = require("socket.io");
+const cors = require('cors');
+require('dotenv').config()
+const port = process.env.PORT || 1234;
 
 
 const app = express();
@@ -29,15 +29,12 @@ const onConnection = (socket) => {
         --connections;
     });
 };
-
 io.on("connect", onConnection);
+
 
 app.use(cors());
 app.use(express.json());
 app.use(userRouter);
-app.use('/', (req, res) => {
-    res.send("server is up and running")
-})
 
 
 DBConnect().then(() => {
@@ -46,3 +43,6 @@ DBConnect().then(() => {
         console.log('Server started on port: ' + port);
     })
 });
+app.use('/', (req, res) => {
+    res.send("server is up and running.\nNumber of socket connections: " + connections + "\n")
+})

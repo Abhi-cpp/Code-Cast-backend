@@ -4,8 +4,8 @@
   "description": "backend of code editor",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon index.js",
-    "start": "node index.js"
+    "dev": "nodemon ./src/index.js",
+    "start": "node ./src/index.js"
   },
   "author": "Abhishek Kumar",
   "license": "ISC",

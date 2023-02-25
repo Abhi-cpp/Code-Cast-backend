@@ -4,8 +4,8 @@ function transport() {
     return nodemailer.createTransport({
         service: 'gmail',
         auth: {
-            user: "abhishek.kumar986871@gmail.com",
-            pass: process.env.PW
+            user: process.env.EMAIL,
+            pass: process.env.EMAIL_PW
         },
         host: 'smtp.gmail.com'
     })
@@ -13,7 +13,7 @@ function transport() {
 const transportobj = transport()
 const sendwelcomemail = (email, name) => {
     transportobj.sendMail({
-        from: 'Code-Editor <abhishek.kumar986871@gmail.com>',
+        from: `Code-Editor <${process.env.EMAIL}>`,
         to: email,
         subject: 'Thanks for joining!',
         text: `Welcome to our service, ${name}!`,

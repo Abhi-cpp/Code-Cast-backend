@@ -1,9 +1,9 @@
 const express = require('express')
 const router = new express.Router()
-const User = require('../DB/schema/user')
+const User = require('./../DB/schema/user')
 const { OAuth2Client } = require('google-auth-library');
-const sendwelcomemail = require('../middleware/email')
-const auth = require("../middleware/auth")
+const sendwelcomemail = require('./../middleware/email')
+const auth = require("./../middleware/auth")
 
 // google auth2
 const verify = async function (body) {
