@@ -1,7 +1,8 @@
 const express = require('express');
 const DBConnect = require('./DB/connect');
 const userRouter = require('./Routes/userRoutes')
-const roomRoutes = require('./Routes/roomRoutes')
+const roomRouter = require('./Routes/roomRoutes')
+const codeRouter = require('./Routes/codeRoutes');
 const { createServer } = require("http");
 const { Server } = require("socket.io");
 const cors = require('cors');
@@ -35,7 +36,8 @@ io.on("connect", onConnection);
 app.use(cors());
 app.use(express.json());
 app.use(userRouter);
-app.use(roomRoutes)
+app.use(roomRouter);
+app.use(codeRouter)
 
 
 DBConnect().then(() => {

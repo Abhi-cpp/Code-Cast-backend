@@ -24,6 +24,7 @@ async function login(req, res) {
         // it's a new user
         if (user == null) {
             user = new User(payload)
+            //! has to disable as google is blocking my gmail login
             sendwelcomemail(user.email, user.name)
             await user.save()
         }
@@ -42,7 +43,7 @@ async function login(req, res) {
 async function fetch(req, res) {
     try {
         await req.user.populate('rooms', 'name roomid language timestamps updatedAt')
-        res.status(200).send(req.user)
+        res.status(200).send({user:req.user, token:req.token})
     }
     catch (e) {
         console.log('error at fetch user', e)
