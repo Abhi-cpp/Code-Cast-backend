@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
+const { Schema } = mongoose;
 
-
-const roomSchema = new mongoose.Schema({
+const roomSchema = new Schema({
     name: {
         type: String,
         required: true,
@@ -12,10 +12,27 @@ const roomSchema = new mongoose.Schema({
         type: String,
         required: true,
         trim: true,
+        immutable: true
+    },
+    code: {
+        type: String,
+        required: true,
+    },
+    language: {
+        type: String,
+        require: true,
+        default: 'javascript'
+    },
+    owner: {
+        type: Schema.Types.ObjectId,
+        required: true,
+        ref: 'user',
+        immutable: true
     }
-    //* iske baad editor data ayega
 }, {
     timestamps: true
 });
 
-const Room = mongoose.model('Room', roomSchema);
+const room = mongoose.model('room', roomSchema);
+
+module.exports = room;

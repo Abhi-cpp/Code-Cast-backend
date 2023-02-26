@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const validator = require('validator');
 const { Schema } = mongoose;
 const jwt = require('jsonwebtoken')
-// const editorSettings = require('./../../static/editor_settings.json')
+const Room = require('./room')
 
 const userSchema = new Schema({
     name: {
@@ -15,6 +15,7 @@ const userSchema = new Schema({
         required: true,
         unique: true,
         trim: true,
+        immutable: true,
         validate(value) {
             if (!validator.isEmail(value)) {
                 throw new Error('Email is invalid');
@@ -73,11 +74,15 @@ const userSchema = new Schema({
                 default: true,
             }
         }
-    }
-    //* isme past ke codes collection me add karna hai
+    },
+    rooms: [{
+        type: Schema.Types.ObjectId,
+        ref: 'room'
+    }]
 }, {
     timestamps: true
 });
+
 
 userSchema.methods.toJSON = function () {
     var obj = this.toObject();
@@ -92,6 +97,15 @@ userSchema.methods.generateAuthToken = async function () {
     const token = jwt.sign({ _id: user._id.toString() }, process.env.JWT_SECRET, { expiresIn: '7 day' })
     return token
 }
-const User = mongoose.model('User', userSchema);
+
+//* use this only after joining the room collection
+userSchema.pre('remove', async function (next) {
+    const user = this
+    await Room.deleteMany({ owner: user._id })
+    next()
+})
+
+
+const User = mongoose.model('user', userSchema);
 
 module.exports = User;

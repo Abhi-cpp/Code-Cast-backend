@@ -1,7 +1,7 @@
 const express = require('express');
 const DBConnect = require('./DB/connect');
-const codeRouter = require('./Routes/codeRouter')
 const userRouter = require('./Routes/userRoutes')
+const roomRoutes = require('./Routes/roomRoutes')
 const { createServer } = require("http");
 const { Server } = require("socket.io");
 const cors = require('cors');
@@ -23,7 +23,7 @@ let connections = 0;
 const onConnection = (socket) => {
     console.log("New client connected");
     ++connections;
-    codeRouter(io, socket, connections)
+    // codeRouter(io, socket, connections)
     socket.on("disconnect", () => {
         console.log("Client disconnected");
         --connections;
@@ -35,6 +35,7 @@ io.on("connect", onConnection);
 app.use(cors());
 app.use(express.json());
 app.use(userRouter);
+app.use(roomRoutes)
 
 
 DBConnect().then(() => {
