@@ -4,7 +4,6 @@ const User = require('./../DB/schema/user')
 async function createRoom(req, res) {
     try {
         const room = new Room(req.room)
-        console.log(room)
         await room.save()
         const user = await User.findById(req.user._id)
         user.rooms.push(room._id)
@@ -20,7 +19,7 @@ async function createRoom(req, res) {
 
 async function fetch(req, res) {
     try {
-        const _id = req.header.id;
+        const _id = req.body.id;
         const room = await Room.findById(_id)
         if (!room)
             return res.status(404).send();
@@ -34,13 +33,11 @@ async function fetch(req, res) {
 
 async function updateRoom(req, res) {
     try {
-        const _id = req.header.id;
-        const updates = Object.keys(req.body)
-        const room = await Room.findById(_id)
-        if (!room)
-            return res.status(404).send();
-        updates.forEach((update) => room[update] = req.body[update])
-        await room.save()
+        const _id = req.body.room._id;
+        const room = await Room.findByIdAndUpdate(_id, {
+            $set: req.body.room
+        }, { new: true, runValidators: true })
+        console.log('room data after update', room);
         res.status(200).send(room)
     }
     catch (e) {
@@ -51,7 +48,7 @@ async function updateRoom(req, res) {
 
 async function deleteRoom(req, res) {
     try {
-        const _id = req.header.id;
+        const _id = req.body.id;
         const room = await Room.findByIdAndDelete(_id)
         if (!room)
             return res.status(404).send();

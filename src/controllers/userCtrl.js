@@ -29,7 +29,7 @@ async function login(req, res) {
             await user.save()
         }
         else
-            await req.user.populate('rooms', 'name roomid language timestamps updatedAt')
+            await user.populate('rooms', 'name roomid language timestamps updatedAt')
         const token = await user.generateAuthToken()
         res.status(200).send({ user, token })
     }
@@ -42,8 +42,9 @@ async function login(req, res) {
 // giving user back it's data after jwt verification
 async function fetch(req, res) {
     try {
+        console.log('req user data', req.user)
         await req.user.populate('rooms', 'name roomid language timestamps updatedAt')
-        res.status(200).send({user:req.user, token:req.token})
+        res.status(200).send({ user: req.user, token: req.token })
     }
     catch (e) {
         console.log('error at fetch user', e)
@@ -52,9 +53,23 @@ async function fetch(req, res) {
 
 }
 
+// update users data
+async function updateUser(req, res) {
+    try {
+        const user = await User.findByIdAndUpdate(req.user._id, {
+            $set: req.body.user
+        }, { new: true, runValidators: true })
+
+        res.status(200).send(user)
+    }
+    catch (e) {
+        console.log('error at update user', e)
+        res.status(500).send()
+    }
+}
+
 // delete user
 async function deleteUser(req, res) {
-    console.log('delete user called');
     try {
         await req.user.remove()
         res.status(200).send('User deleted successfully')
@@ -71,5 +86,6 @@ async function deleteUser(req, res) {
 module.exports = {
     login,
     fetch,
-    deleteUser
+    deleteUser,
+    updateUser
 }

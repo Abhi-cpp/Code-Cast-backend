@@ -3,7 +3,8 @@ module.exports = {
     USERS: {
         LOGIN: '/users/login',
         FETCH: '/users/fetch',
-        DELETE: '/users/delete'
+        DELETE: '/users/delete',
+        UPDATE: '/users/update',
     },
     // code Routes
     ROOMS: {

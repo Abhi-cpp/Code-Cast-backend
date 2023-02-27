@@ -85,7 +85,7 @@ const userSchema = new Schema({
 
 
 userSchema.methods.toJSON = function () {
-    var obj = this.toObject();
+    let obj = this.toObject();
     delete obj.createdAt;
     delete obj.updatedAt;
     delete obj.__v;

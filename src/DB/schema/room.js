@@ -6,7 +6,6 @@ const roomSchema = new Schema({
         type: String,
         required: true,
         trim: true,
-        lowercase: true
     },
     roomid: {
         type: String,
@@ -32,6 +31,15 @@ const roomSchema = new Schema({
 }, {
     timestamps: true
 });
+
+
+roomSchema.methods.toJSON = function () {
+    let obj = this.toObject();
+    delete obj.owner;
+    delete obj.updatedAt;
+    delete obj.__v;
+    return obj;
+}
 
 const room = mongoose.model('room', roomSchema);
 
