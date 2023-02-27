@@ -8,4 +8,7 @@ const codeCtrl = require('./../controllers/codeCtrl')
 //! expectiong req.body to have {code: 'code to be executed', language: 'language of the code'}
 codeRouter.post(url.CODE.EXECUTE, auth, validateCode, codeCtrl.execute)
 
+// socket.io send and recieve code from client and forward it to the other client
+
+
 module.exports = codeRouter

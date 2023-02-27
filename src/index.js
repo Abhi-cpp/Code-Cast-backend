@@ -3,6 +3,7 @@ const DBConnect = require('./DB/connect');
 const userRouter = require('./Routes/userRoutes')
 const roomRouter = require('./Routes/roomRoutes')
 const codeRouter = require('./Routes/codeRoutes');
+const { socketIO, connections } = require('./controllers/socketIo')
 const { createServer } = require("http");
 const { Server } = require("socket.io");
 const cors = require('cors');
@@ -20,17 +21,8 @@ const io = new Server(httpServer, {
     }
 });
 
-let connections = 0;
-const onConnection = (socket) => {
-    console.log("New client connected");
-    ++connections;
-    // codeRouter(io, socket, connections)
-    socket.on("disconnect", () => {
-        console.log("Client disconnected");
-        --connections;
-    });
-};
-io.on("connect", onConnection);
+// how to send io to socketIo.js
+socketIO(io);
 
 
 app.use(cors());
