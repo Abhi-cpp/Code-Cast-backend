@@ -3,7 +3,7 @@ const DBConnect = require('./DB/connect');
 const userRouter = require('./Routes/userRoutes')
 const roomRouter = require('./Routes/roomRoutes')
 const codeRouter = require('./Routes/codeRoutes');
-const { socketIO, connections } = require('./controllers/socketIo')
+const socketIO = require('./controllers/socketIo')
 const { createServer } = require("http");
 const { Server } = require("socket.io");
 const cors = require('cors');
@@ -39,5 +39,5 @@ DBConnect().then(() => {
     })
 });
 app.use('/', (req, res) => {
-    res.send("server is up and running.\nNumber of socket connections: " + connections + "\n")
+    res.send("server is up and running. ")
 })
