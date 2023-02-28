@@ -27,6 +27,8 @@ const socketIo = (io) => {
         connectionCount++;
         console.log(`New connection: ${connectionCount}`);
 
+        // x-y corrdingate array
+
         socket.on('join', ({ roomName = 'Room X', roomId, name, code = '', language = 'javascript' }) => {
             try {
 
@@ -42,6 +44,7 @@ const socketIo = (io) => {
                         users: [],
                         code: code,
                         language: language
+                        // xy corarray
                     }
                 }
 
@@ -67,67 +70,69 @@ const socketIo = (io) => {
                 console.log(err);
                 socket.emit('error', { error: err });
             }
-
-            // when a client sends a message to the server
-            //! have to add other data to this event
-            socket.on('updateRoom', ({ roomId, code = '', language = '' }) => {
-                try { // update the room data
-
-                    if (!memberOfRoom(roomId, socket.id)) throw new Error('User is not in the room');
-
-                    rooms[roomId].code = code;
-                    rooms[roomId].language = language;
-
-                    // send to all users expect the sender
-                    socket.to(roomId).emit('newData', { room: rooms[roomId] });
-                } catch (err) {
-                    console.log(err);
-                    socket.emit('error', { error: err });
-                }
-            });
-
-            // when a user leaves the room
-            socket.on('leaveRoom', ({ roomId }) => {
-                // remove the user from the room
-                try {
-
-                    if (!memberOfRoom(roomId, socket.id)) throw new Error('User is not in the room');
-
-                    const user = rooms[roomId].users[socket.id]
-                    rooms[roomId].users = rooms[roomId].users.filter(user => user.id !== socket.id);
-
-                    console.log('before leaving', socket.adapter.rooms)
-
-                    socket.leave(roomId);
-
-                    console.log('after leaving room', socket.adapter.rooms)
-
-                    // acknowledge the room that the user left
-                    io.to(roomId).emit('userLeft', { user, room: rooms[roomId] });
-
-                    // if there are no users in the room, delete the room
-                    if (rooms[roomId].users.length === 0) {
-                        delete rooms[roomId];
-                    }
-                } catch (err) {
-                    console.log(err);
-                    socket.emit('error', { err });
-                }
-            });
-
-            // get status of room
-            socket.on('get', ({ roomId }) => {
-                try {
-                    if (!memberOfRoom(roomId, socket.id)) throw new Error('User is not in the room');
-
-                    socket.emit('roomStatus', { room: rooms });
-                } catch (err) {
-                    console.log(err);
-                    socket.emit('error', { error: err });
-                }
-            });
-
         });
+
+        // update drawing data
+        // when a client sends a message to the server
+        //! have to add other data to this event
+        socket.on('updateRoom', ({ roomId, code = '', language = '' }) => {
+            try { // update the room data
+
+                if (!memberOfRoom(roomId, socket.id)) throw new Error('User is not in the room');
+
+                rooms[roomId].code = code;
+                rooms[roomId].language = language;
+
+                // send to all users expect the sender
+                socket.to(roomId).emit('newData', { room: rooms[roomId] });
+            } catch (err) {
+                console.log(err);
+                socket.emit('error', { error: err });
+            }
+        });
+
+        // when a user leaves the room
+        socket.on('leaveRoom', ({ roomId }) => {
+            // remove the user from the room
+            try {
+
+                if (!memberOfRoom(roomId, socket.id)) throw new Error('User is not in the room');
+
+                const user = rooms[roomId].users[socket.id]
+                rooms[roomId].users = rooms[roomId].users.filter(user => user.id !== socket.id);
+
+                console.log('before leaving', socket.adapter.rooms)
+
+                socket.leave(roomId);
+
+                console.log('after leaving room', socket.adapter.rooms)
+
+                // acknowledge the room that the user left
+                io.to(roomId).emit('userLeft', { user, room: rooms[roomId] });
+
+                // if there are no users in the room, delete the room
+                if (rooms[roomId].users.length === 0) {
+                    delete rooms[roomId];
+                }
+            } catch (err) {
+                console.log(err);
+                socket.emit('error', { err });
+            }
+        });
+
+        // get status of room
+        socket.on('get', ({ roomId }) => {
+            try {
+                if (!memberOfRoom(roomId, socket.id)) throw new Error('User is not in the room');
+
+                socket.emit('roomStatus', { room: rooms });
+            } catch (err) {
+                console.log(err);
+                socket.emit('error', { error: err });
+            }
+        });
+
+
 
 
 
