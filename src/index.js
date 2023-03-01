@@ -3,10 +3,10 @@ const DBConnect = require('./DB/connect');
 const userRouter = require('./Routes/userRoutes')
 const roomRouter = require('./Routes/roomRoutes')
 const codeRouter = require('./Routes/codeRoutes');
-const socketIO = require('./controllers/socketIo')
 const { createServer } = require("http");
 const { Server } = require("socket.io");
 const cors = require('cors');
+const initSocketIO = require('./initSocket');
 require('dotenv').config()
 const port = process.env.PORT || 1234;
 
@@ -22,7 +22,7 @@ const io = new Server(httpServer, {
 });
 
 // how to send io to socketIo.js
-socketIO(io);
+initSocketIO(io)
 
 
 app.use(cors());
