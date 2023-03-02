@@ -38,6 +38,8 @@ DBConnect().then(() => {
         console.log('Server started on port: ' + port);
     })
 });
+
+
 app.use('/', (req, res) => {
     res.send("server is up and running. ")
 })

@@ -1,4 +1,5 @@
-const { createRoom, deleteRoom, addRoomUser, removeRoomUser, getRoom, handleDisconnect } = require('../controllers/socketRoom');
+const socketAuth = require('../middleware/socketAuth');
+const { createRoom, deleteRoom, addRoomUser, removeRoomUser, getRoom, handleDisconnect } = require('../Room/socketRoom');
 
 function memberOfRoom(roomId, socketId) {
     // use try catch method to handle errors
@@ -22,7 +23,7 @@ function mangerRoom(socket, io) {
     const { id: socketId } = socket;
 
 
-    socket.on('join', async ({ roomName = 'Room X', roomId, name, code = '', language = 'javascript' }) => {
+    socket.on('join', async ({ token, roomName = 'Room X', roomId, name, code = '', language = 'javascript' }) => {
 
         console.log('join', roomName, roomId, name, code, language);
 
@@ -30,6 +31,8 @@ function mangerRoom(socket, io) {
             if (!name) {
                 throw new Error('Invalid data');
             }
+
+            socketAuth(token);
 
             createRoom(roomId, roomName, code, language);
 
@@ -43,7 +46,7 @@ function mangerRoom(socket, io) {
 
             socket.emit('greet', { msg: `Welcome to ${roomName}`, room: getRoom(roomId) });
 
-            socket.to(roomId).emit('newJoin', { msg: `New user joined ${name}`, room: getRoom(roomId) });
+            socket.to(roomId).emit('userJoin', { msg: `New user joined ${name}`, room: getRoom(roomId) });
 
         } catch (err) {
             console.log(err);
@@ -62,7 +65,7 @@ function mangerRoom(socket, io) {
             room.code = code;
             room.language = language;
 
-            socket.to(roomId).emit('newData', { room: room });
+            socket.to(roomId).emit('update', { room: room });
 
         } catch (err) {
             console.log(err);
@@ -77,9 +80,9 @@ function mangerRoom(socket, io) {
         try {
             if (!memberOfRoom(roomId, socketId)) throw new Error('User is not in the room');
 
-            removeRoomUser(roomId, socketId);
-
-            socket.to(roomId).emit('userLeft', { msg: `User left`, room: getRoom(roomId) });
+            const name = removeRoomUser(roomId, socketId);
+            // emit user left msg with name of the user and room data
+            io.to(roomId).emit('userLeft', { name, room: getRoom(roomId) });
 
             socket.leave(roomId);
 
@@ -99,15 +102,13 @@ function mangerRoom(socket, io) {
         // go through all the rooms and remove the user from the room
         let acknowledge = handleDisconnect(socketId);
 
-        for (let i = 0; i < acknowledge.length; i++) {
+        for (const element of acknowledge) {
 
-            let { name, roomId } = acknowledge[i];
-
-            console.log(acknowledge[i])
+            let { name, roomId } = element;
 
             roomId = Number(roomId);
 
-            io.to(roomId).emit('userLeft', { msg: `User left`, name, room: getRoom(roomId) });
+            io.to(roomId).emit('userLeft', { name, room: getRoom(roomId) });
         }
     });
 
@@ -116,7 +117,6 @@ function mangerRoom(socket, io) {
 
 
     socket.on('getRoom', ({ roomId }) => {
-        console.log(socket.rooms)
         try {
             if (!memberOfRoom(roomId, socketId)) throw new Error('User is not in the room');
 
