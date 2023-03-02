@@ -42,7 +42,7 @@ async function login(req, res) {
 // giving user back it's data after jwt verification
 async function fetch(req, res) {
     try {
-        console.log('req user data', req.user)
+        console.log('fetch user called')
         await req.user.populate('rooms', 'name roomid language timestamps updatedAt')
         res.status(200).send({ user: req.user, token: req.token })
     }
@@ -56,6 +56,7 @@ async function fetch(req, res) {
 // update users data
 async function updateUser(req, res) {
     try {
+        console.log('update user called')
         const user = await User.findByIdAndUpdate(req.user._id, {
             $set: req.body.user
         }, { new: true, runValidators: true })

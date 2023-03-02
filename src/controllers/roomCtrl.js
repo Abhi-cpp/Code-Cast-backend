@@ -19,8 +19,8 @@ async function createRoom(req, res) {
 
 async function fetch(req, res) {
     try {
-        const _id = (req.query.id);
-        const room = await Room.findById(_id)
+        const roomid = (req.query.id);
+        const room = await Room.findOne({roomid})
         if (!room)
             return res.status(404).send();
         res.status(200).send(room)
