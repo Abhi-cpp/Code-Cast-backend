@@ -47,33 +47,31 @@ const userSchema = new Schema({
             default: 'Fira Code',
             trim: true,
         },
-        setting: {
-            // all settins of @monaco-editor/react
-            autoIndent: {
-                type: Boolean,
-                default: true,
-            },
-            formatOnSave: {
-                type: Boolean,
-                default: true,
-            },
-            minimap: {
-                type: Boolean,
-                default: true,
-            },
-            wordWrap: {
-                type: String,
-                default: "on",
-            },
-            tabSize: {
-                type: Number,
-                default: 4,
-            },
-            autoSuggestions: {
-                type: Boolean,
-                default: true,
-            }
+        autoIndent: {
+            type: Boolean,
+            default: true,
+        },
+        formatOnSave: {
+            type: Boolean,
+            default: true,
+        },
+        minimap: {
+            type: Boolean,
+            default: true,
+        },
+        wordWrap: {
+            type: String,
+            default: "on",
+        },
+        tabSize: {
+            type: Number,
+            default: 4,
+        },
+        autoSuggestions: {
+            type: Boolean,
+            default: true,
         }
+
     },
     rooms: [{
         type: Schema.Types.ObjectId,

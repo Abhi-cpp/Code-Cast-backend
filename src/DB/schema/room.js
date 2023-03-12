@@ -6,6 +6,7 @@ const roomSchema = new Schema({
         type: String,
         required: true,
         trim: true,
+        immutable: true,
     },
     roomid: {
         type: String,

@@ -20,7 +20,7 @@ async function createRoom(req, res) {
 async function fetch(req, res) {
     try {
         const roomid = (req.query.id);
-        const room = await Room.findOne({roomid})
+        const room = await Room.findOne({ roomid })
         if (!room)
             return res.status(404).send();
         res.status(200).send(room)
@@ -33,10 +33,16 @@ async function fetch(req, res) {
 
 async function updateRoom(req, res) {
     try {
-        const _id = req.body.room._id;
-        const room = await Room.findByIdAndUpdate(_id, {
-            $set: req.body.room
-        }, { new: true, runValidators: true })
+        const roomid = req.body.room._id;
+        const room = await Room.findOneAndUpdate(roomid, {
+            name: req.body.room.name,
+            code: req.body.room.code || " ",
+            language: req.body.room.language
+        }, {
+            new: true,
+            runValidators: true
+        })
+
         console.log('room data after update', room);
         res.status(200).send(room)
     }

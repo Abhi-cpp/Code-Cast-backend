@@ -9,11 +9,13 @@ const cors = require('cors');
 const initSocketIO = require('./initSocket');
 require('dotenv').config()
 const port = process.env.PORT || 1234;
+const bodyParser = require('body-parser');
 
 
 const app = express();
 const httpServer = createServer(app);
 
+app.use(bodyParser.json({ limit: '10mb' }));
 
 const io = new Server(httpServer, {
     cors: {
