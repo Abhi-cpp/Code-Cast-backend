@@ -33,7 +33,6 @@ async function execute(req, res) {
             language,
             input,
         };
-        console.log(url, data)
         const response = await axios.post(url, data);
         return res.status(200).send(response.data);
     } catch (error) {

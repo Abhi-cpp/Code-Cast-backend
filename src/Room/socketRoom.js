@@ -35,9 +35,6 @@ function removeRoomUser(roomid, userId) {
             }
             return true;
         });
-        // if (rooms[roomid].users.length === 0) {
-        //     deleteRoom(roomid);
-        // }
     }
     return userName;
 }

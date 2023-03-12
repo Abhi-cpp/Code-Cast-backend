@@ -8,7 +8,6 @@ async function createRoom(req, res) {
         const user = await User.findById(req.user._id)
         user.rooms.push(room._id)
         user.save()
-        console.log('final call room', room)
         res.status(200).send(room)
     }
     catch (e) {
@@ -43,7 +42,6 @@ async function updateRoom(req, res) {
             runValidators: true
         })
 
-        console.log('room data after update', room);
         res.status(200).send(room)
     }
     catch (e) {
