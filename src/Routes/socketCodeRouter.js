@@ -37,14 +37,13 @@ function mangerRoom(socket, io) {
             if (memberOfRoom(roomid, socketId))
                 throw new Error('User is already in the room');
 
-
             addRoomUser(roomid, { id: socketId, name });
 
             await socket.join(roomid);
 
             socket.emit('greet', { msg: `Welcome to ${roomName}`, room: getRoom(roomid) });
 
-            socket.to(roomid).emit('userJoin', { msg: `New user joined ${name}`, room: getRoom(roomid) });
+            socket.to(roomid).emit('userJoin', { msg: `New user joined ${name}` });
 
         } catch (err) {
             console.log(err);
@@ -58,7 +57,6 @@ function mangerRoom(socket, io) {
     socket.on('updateRoom', ({ roomid, code = '', language = '' }) => {
         try {
             if (!memberOfRoom(roomid, socketId)) throw new Error('User is not in the room');
-
             const room = getRoom(roomid);
             room.code = code;
             room.language = language;
@@ -82,11 +80,7 @@ function mangerRoom(socket, io) {
 
             socket.leave(roomid);
 
-            io.to(roomid).emit('userLeft', { name, room: getRoom(roomid) });
-            // if (getRoom(roomid).users.length === 0) {
-            //     deleteRoom(roomid);
-            // }
-
+            io.to(roomid).emit('userLeft', { name });
         } catch (err) {
             console.log(err);
             socket.emit('error', { error: err });
@@ -105,25 +99,12 @@ function mangerRoom(socket, io) {
 
             roomid = Number(roomid);
 
-            io.to(roomid).emit('userLeft', { name, room: getRoom(roomid) });
+            io.to(roomid).emit('userLeft', { name });
         }
     });
 
 
 
-
-
-    socket.on('getRoom', ({ roomid }) => {
-        try {
-            if (!memberOfRoom(roomid, socketId)) throw new Error('User is not in the room');
-
-            socket.emit('roomData', { room: getRoom(roomid) });
-
-        } catch (err) {
-            console.log(err);
-            socket.emit('error', { error: err });
-        }
-    });
 
 }
 
