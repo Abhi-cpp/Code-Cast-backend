@@ -4,7 +4,7 @@ const userRouter = require('./Routes/userRoutes')
 const roomRouter = require('./Routes/roomRoutes')
 const codeRouter = require('./Routes/codeRoutes');
 const { createServer } = require("http");
-const { Server } = require("socket.io");
+const { Server } = require("socket.io")
 const cors = require('cors');
 const initSocketIO = require('./initSocket');
 require('dotenv').config()
@@ -15,12 +15,13 @@ const bodyParser = require('body-parser');
 const app = express();
 const httpServer = createServer(app);
 
-app.use(bodyParser.json({ limit: '10mb' }));
+app.use(bodyParser.json({ limit: '1mb' }));
 
 const io = new Server(httpServer, {
     cors: {
         origin: "*",
-    }
+        transports: ['websocket', 'polling'], credentials: true
+    }, allowEIO3: true
 });
 
 // how to send io to socketIo.js
