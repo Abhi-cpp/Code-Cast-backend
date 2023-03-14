@@ -16,11 +16,11 @@ NodeJS	js
 const languageMap = {
     java: "java",
     python: "py",
-    cpp: "cpp",
-    c: "c",
-    go: "go",
+    c_cpp: "cpp",
+    golang: "go",
     csharp: "cs",
     nodejs: "js",
+    javascript: "js"
 };
 
 async function execute(req, res) {
@@ -36,7 +36,7 @@ async function execute(req, res) {
         const response = await axios.post(url, data);
         return res.status(200).send(response.data);
     } catch (error) {
-        console.log('error in code execute', error);
+        console.log('error in code execute');
         return res.status(500).send({ error: error });
     }
 }

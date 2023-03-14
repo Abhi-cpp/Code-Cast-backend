@@ -1,4 +1,4 @@
-const supportedLanguage = ['c', 'cpp', 'java', 'python', 'javascript', 'nodejs', 'go', 'cs']
+const supportedLanguage = ['c_cpp', 'java', 'python', 'nodejs', 'golang', 'csharp']
 const validateCode = async (req, res, next) => {
     let { code, language } = req.body
     language = language.toLowerCase()
@@ -9,7 +9,7 @@ const validateCode = async (req, res, next) => {
     if (!supportedLanguage.includes(language)) {
         return res.status(400).send({ error: 'Language not supported' })
     }
-    // req.body.language = language 
+    req.body.language = language 
     next()
 }
 

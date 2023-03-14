@@ -47,8 +47,5 @@ DBConnect().then(() => {
 
 
 app.use('/', (req, res) => {
-    res.send({
-        msg: "server is up and running. ",
-        connection
-    })
+    res.status(200).send(connection)
 })

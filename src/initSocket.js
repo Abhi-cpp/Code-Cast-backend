@@ -6,7 +6,6 @@ const initSocketIO = (io, connection) => {
     io.on('connection', (socket) => {
 
         ++connection.count;
-        console.log(socket.id)
         connection.users.push(socket.id);
         console.log(`A user connected. Total connections: ${connection.count}`);
 
