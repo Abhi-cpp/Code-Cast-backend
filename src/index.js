@@ -23,9 +23,12 @@ const io = new Server(httpServer, {
         transports: ['websocket', 'polling'], credentials: true
     }, allowEIO3: true
 });
-
+const connection = {
+    count: 0,
+    users: []
+}
 // how to send io to socketIo.js
-initSocketIO(io)
+initSocketIO(io, connection)
 
 
 app.use(cors());
@@ -44,5 +47,5 @@ DBConnect().then(() => {
 
 
 app.use('/', (req, res) => {
-    res.send("server is up and running. ")
+    res.send("server is up and running. ", connection)
 })

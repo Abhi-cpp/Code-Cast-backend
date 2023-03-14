@@ -1,20 +1,21 @@
 const mangeRoom = require('./Routes/socketCodeRouter');
 
-let connectionCount = 0;
 
-const initSocketIO = (io) => {
+const initSocketIO = (io, connection) => {
 
     io.on('connection', (socket) => {
 
-        ++connectionCount;
-        console.log(`A user connected. Total connections: ${connectionCount}`);
+        ++connection.count;
+        connection.user.push(socket.id);
+        console.log(`A user connected. Total connections: ${connection.count}`);
 
         mangeRoom(socket, io);
 
         socket.on('disconnect', () => {
 
-            --connectionCount;
-            console.log(`A user disconnected. Total connections: ${connectionCount}`);
+            --connection.Count;
+            connection.user = connection.user.filter((user) => user !== socket.id);
+            console.log(`A user disconnected. Total connections: ${connection.count}`);
 
         });
     });
