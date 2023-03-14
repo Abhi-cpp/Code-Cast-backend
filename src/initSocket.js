@@ -6,15 +6,16 @@ const initSocketIO = (io, connection) => {
     io.on('connection', (socket) => {
 
         ++connection.count;
-        connection.user.push(socket.id);
+        console.log(socket.id)
+        connection.users.push(socket.id);
         console.log(`A user connected. Total connections: ${connection.count}`);
 
         mangeRoom(socket, io);
 
         socket.on('disconnect', () => {
 
-            --connection.Count;
-            connection.user = connection.user.filter((user) => user !== socket.id);
+            connection.count--;
+            connection.users = connection.users.filter((user) => user !== socket.id);
             console.log(`A user disconnected. Total connections: ${connection.count}`);
 
         });
