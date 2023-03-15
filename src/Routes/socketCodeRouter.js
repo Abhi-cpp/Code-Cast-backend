@@ -5,7 +5,7 @@ function mangerRoom(socket, io) {
 
     const { id: socketId } = socket;
 
-    socket.on('join', async ({ token, roomName = 'Room X', roomid, name, code = '', language = 'javascript', input = '', output = '' }) => {
+    socket.on('join', async ({ roomName = 'Room X', roomid, name, code = '', language = 'javascript', input = '', output = '' }) => {
         try {
             if (!name) {
                 throw new Error('Invalid data');
@@ -51,10 +51,11 @@ function mangerRoom(socket, io) {
         }
     });
 
-    socket.on('updateIO', ({ roomid, inputPath, outputPatch }) => {
+    socket.on('updateIO', ({ roomid, input, output, language }) => {
         try {
-            updateRoomIO(roomid, inputPath, outputPatch);
-            socket.to(roomid).emit('updateIO', { inputPath, outputPatch });
+            console.log('updateIO', input, output, language)
+            updateRoomIO(roomid, input, output, language);
+            socket.to(roomid).emit('updateIO', { input, output, language });
         } catch (err) {
             console.log(err);
             socket.emit('error', { error: err });

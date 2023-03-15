@@ -63,10 +63,11 @@ function updateRoom(roomid, patch, language) {
     }
 }
 
-function updateRoomIO(roomid, inputPath, outputPatch) {
+function updateRoomIO(roomid, input, output,language) {
     if (rooms[roomid]) {
-        rooms[roomid].input = diff.patch_apply(outputPatch, rooms[roomid].input);
-        rooms[roomid].output = diff.patch_apply(outputPatch, rooms[roomid].output);
+        rooms[roomid].input = input;
+        rooms[roomid].output = output;
+        rooms[roomid].language = language;
     }
 }
 
