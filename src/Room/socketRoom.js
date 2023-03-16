@@ -63,7 +63,7 @@ function updateRoom(roomid, patch, language) {
     }
 }
 
-function updateRoomIO(roomid, input, output,language) {
+function updateRoomIO(roomid, input, output, language) {
     if (rooms[roomid]) {
         rooms[roomid].input = input;
         rooms[roomid].output = output;
