@@ -62,6 +62,16 @@ function mangerRoom(socket, io) {
         }
     })
 
+    socket.on('getRoom', ({ roomid }) => {
+        try {
+            // emit to everyone in the room
+            socket.to(roomid).emit('getRoom', { room: getRoom(roomid) });
+        } catch (err) {
+            console.log(err);
+            socket.emit('error', { error: err });
+        }
+    })
+
 
 }
 
