@@ -1,14 +1,18 @@
+const diff = require('diff-match-patch');
+const dmp = new diff.diff_match_patch();
 const rooms = {};
 
-
-function createRoom(roomid, roomName, code, language) {
+function createRoom(roomid, roomName, code, language, input, output) {
     if (!rooms[roomid]) {
+        console.log("room created", roomid);
         rooms[roomid] = {
             roomName,
             roomid,
             users: [],
             code,
-            language
+            language,
+            input,
+            output
         }
     }
 }
@@ -43,32 +47,36 @@ function getRoom(roomid) {
     return rooms[roomid] ? rooms[roomid] : null;
 }
 
-function handleDisconnect(socketId) {
-    // go through all the rooms and remove the user from the room and delete the room if there are no users
-    // we need to store the user name and roomid so that we can send the userleft message to the rooms
-    let toacknowledge = [];
-    for (let roomid in rooms) {
-        rooms[roomid].users = rooms[roomid].users.filter(user => {
-            if (user.id === socketId) {
-                toacknowledge.push({ roomid, name: user.name });
-                return false;
-            }
-            return true;
-        });
-        if (rooms[roomid].users.length === 0) {
-            deleteRoom(roomid);
-
+function updateRoom(roomid, patch, language) {
+    if (rooms[roomid]) {
+        try {
+            // output each element of the patch with a + or - to indicate whether it is an addition or deletion
+            const code = rooms[roomid].code;
+            const [newCode] = dmp.patch_apply(patch, code);
+            // console.log('old code\n', code, '\nNew Code\n', newCode)
+            rooms[roomid].code = newCode;
+            rooms[roomid].language = language;
+        }
+        catch (e) {
+            console.log('updare failed', e);
         }
     }
-    return toacknowledge;
-
 }
+
+function updateRoomIO(roomid, input, output, language) {
+    if (rooms[roomid]) {
+        rooms[roomid].input = input;
+        rooms[roomid].output = output;
+        rooms[roomid].language = language;
+    }
+}
+
 
 module.exports = {
     createRoom,
-    deleteRoom,
     addRoomUser,
     removeRoomUser,
     getRoom,
-    handleDisconnect
+    updateRoom,
+    updateRoomIO,
 };
