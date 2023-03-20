@@ -32,11 +32,13 @@ async function fetch(req, res) {
 
 async function updateRoom(req, res) {
     try {
-        const roomid = req.body.room._id;
-        const room = await Room.findOneAndUpdate(roomid, {
-            name: req.body.room.name,
-            code: req.body.room.code || " ",
-            language: req.body.room.language
+        const roomid = req.body.room.roomid;
+        const room = await Room.findOneAndUpdate({
+            roomid
+        }, {
+            name: req.body.room.name || "",
+            code: req.body.room.code || "",
+            language: req.body.room.language || ""
         }, {
             new: true,
             runValidators: true

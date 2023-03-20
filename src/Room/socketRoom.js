@@ -1,10 +1,9 @@
 const diff = require('diff-match-patch');
 const dmp = new diff.diff_match_patch();
-const rooms = {};
+let rooms = {};
 
 function createRoom(roomid, roomName, code, language, input, output) {
     if (!rooms[roomid]) {
-        console.log("room created", roomid);
         rooms[roomid] = {
             roomName,
             roomid,
@@ -18,6 +17,7 @@ function createRoom(roomid, roomName, code, language, input, output) {
 }
 
 function deleteRoom(roomid) {
+    console.log('dateleting room', roomid)
     if (rooms[roomid]) {
         delete rooms[roomid];
     }
@@ -40,6 +40,8 @@ function removeRoomUser(roomid, userId) {
             return true;
         });
     }
+    if (rooms[roomid].users.length === 0)
+        deleteRoom(roomid);
     return userName;
 }
 
@@ -47,30 +49,45 @@ function getRoom(roomid) {
     return rooms[roomid] ? rooms[roomid] : null;
 }
 
-function updateRoom(roomid, patch, language) {
+function updateRoom(roomid, patch) {
     if (rooms[roomid]) {
         try {
-            // output each element of the patch with a + or - to indicate whether it is an addition or deletion
             const code = rooms[roomid].code;
-            const [newCode] = dmp.patch_apply(patch, code);
-            // console.log('old code\n', code, '\nNew Code\n', newCode)
-            rooms[roomid].code = newCode;
-            rooms[roomid].language = language;
+            const [newCode, result] = dmp.patch_apply(patch, code);
+            if (result[0])
+                rooms[roomid].code = newCode;
+            else
+                console.log('patch failed');
         }
         catch (e) {
-            console.log('updare failed', e);
+            console.log('update failed', e);
         }
     }
 }
 
-function updateRoomIO(roomid, input, output, language) {
+function updateRoomIO(roomid, input = '', output = '', language = '') {
     if (rooms[roomid]) {
-        rooms[roomid].input = input;
-        rooms[roomid].output = output;
-        rooms[roomid].language = language;
+        console.log('updateRoomIo', input, output, language);
+        try {
+            rooms[roomid].input = input;
+            rooms[roomid].output = output;
+            rooms[roomid].language = language;
+        } catch (e) { console.log(e) }
+
+        console.log('after update', rooms[roomid])
     }
 }
 
+function deleteUser(userId) {
+    for (let roomid in rooms) {
+        for (let user in rooms[roomid].users) {
+            if (rooms[roomid].users[user].id === userId) {
+                return roomid;
+            }
+        }
+    }
+    return null;
+}
 
 module.exports = {
     createRoom,
@@ -79,4 +96,5 @@ module.exports = {
     getRoom,
     updateRoom,
     updateRoomIO,
+    deleteUser
 };

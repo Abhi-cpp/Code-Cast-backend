@@ -1,24 +1,24 @@
-const { createRoom, addRoomUser, removeRoomUser, getRoom, updateRoom, updateRoomIO } = require('../Room/socketRoom');
+const { createRoom, addRoomUser, removeRoomUser, getRoom, updateRoom, updateRoomIO, deleteUser } = require('../Room/socketRoom');
 
 
 function mangerRoom(socket, io) {
 
     const { id: socketId } = socket;
 
-    socket.on('join', async ({ roomName = 'Room X', roomid, name, code = '', language = 'javascript', input = '', output = '' }) => {
+    socket.on('join', async ({ roomName = 'Room X', roomid, name, code = '', language = 'javascript', input = '', output = '', avatar = '' }) => {
         try {
             if (!name) {
                 throw new Error('Invalid data');
             }
             createRoom(roomid, roomName, code, language, input, output);
 
-            addRoomUser(roomid, { id: socketId, name });
+            addRoomUser(roomid, { id: socketId, name, avatar });
 
             await socket.join(roomid);
 
             socket.emit('join', { msg: `Welcome to ${roomName}`, room: getRoom(roomid) });
 
-            socket.to(roomid).emit('userJoin', { msg: `New user joined ${name}` });
+            socket.to(roomid).emit('userJoin', { msg: `New user joined ${name}`, newUser: { id: socketId, name, avatar } });
 
         } catch (err) {
             console.log(err);
@@ -26,12 +26,10 @@ function mangerRoom(socket, io) {
         }
     });
 
-
-
-    socket.on('update', ({ roomid, patch, language = '' }) => {
+    socket.on('update', ({ roomid, patch }) => {
         try {
-            updateRoom(roomid, patch, language);
-            socket.to(roomid).emit('update', { patch, language });
+            updateRoom(roomid, patch);
+            socket.to(roomid).emit('update', { patch });
         } catch (err) {
             console.log(err);
             socket.emit('error', { error: err });
@@ -44,7 +42,9 @@ function mangerRoom(socket, io) {
         try {
             const name = removeRoomUser(roomid, socketId);
             socket.leave(roomid);
-            io.to(roomid).emit('userLeft', { name });
+            io.to(roomid).emit('userLeft', { msg: `${name} left the room`, userId: socketId });
+            console.log('user left', name);
+
         } catch (err) {
             console.log(err);
             socket.emit('error', { error: err });
@@ -55,7 +55,11 @@ function mangerRoom(socket, io) {
         try {
             console.log('updateIO', input, output, language)
             updateRoomIO(roomid, input, output, language);
-            socket.to(roomid).emit('updateIO', { input, output, language });
+            socket.to(roomid).emit('updateIO', {
+                newinput: input,
+                newoutput: output,
+                newlanguage: language
+            });
         } catch (err) {
             console.log(err);
             socket.emit('error', { error: err });
@@ -65,13 +69,23 @@ function mangerRoom(socket, io) {
     socket.on('getRoom', ({ roomid }) => {
         try {
             // emit to everyone in the room
-            socket.to(roomid).emit('getRoom', { room: getRoom(roomid) });
+            io.in(roomid).emit('getRoom', { room: getRoom(roomid) });
         } catch (err) {
             console.log(err);
             socket.emit('error', { error: err });
         }
     })
 
+    socket.on('disconnect', () => {
+        console.log('user disconnected');
+        let roomid = deleteUser(socketId);
+        if (roomid !== null) {
+            const name = removeRoomUser(roomid, socketId);
+            socket.leave(roomid);
+            io.to(roomid).emit('userLeft', { msg: `${name} left the room`, userId: socketId });
+            console.log('user left', name);
+        }
+    });
 
 }
 
