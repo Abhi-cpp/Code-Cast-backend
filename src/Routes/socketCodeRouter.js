@@ -93,10 +93,9 @@ function mangerRoom(socket, io) {
         socket.to(roomid).emit('Id', { peerId });
     })
 
-    socket.on('draw', (data) => {
-        console.log("draw", data)
-        socket.to(data.roomid).emit('draw', data);
-        // socket.to(roomid).emit('draw', { newCoordinates, color });
+    socket.on('drawing', (data) => {
+        // console.log("drawing", data)
+        socket.to(data.roomid).emit('drawing', data);
     })
 
 }
