@@ -15,7 +15,7 @@ function mangerRoom(socket, io) {
 
             await socket.join(roomid);
 
-            socket.emit('me', socketId);
+            // socket.emit('me', socketId);
             socket.emit('join', { msg: `Welcome to ${roomName}`, room: getRoom(roomid) });
 
             socket.to(roomid).emit('userJoin', { msg: `New user joined ${name}`, newUser: { id: socketId, name, avatar } });
@@ -91,6 +91,12 @@ function mangerRoom(socket, io) {
     socket.on('Id', ({ roomid, peerId }) => {
         console.log("peerId", peerId)
         socket.to(roomid).emit('Id', { peerId });
+    })
+
+    socket.on('draw', (data) => {
+        console.log("draw", data)
+        socket.to(data.roomid).emit('draw', data);
+        // socket.to(roomid).emit('draw', { newCoordinates, color });
     })
 
 }
