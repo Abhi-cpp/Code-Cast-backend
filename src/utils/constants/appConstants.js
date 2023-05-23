@@ -5,6 +5,7 @@ module.exports = {
         FETCH: '/users/fetch',
         DELETE: '/users/delete',
         UPDATE: '/users/update',
+        REGISTER: '/users/register',
     },
     // code Routes
     ROOMS: {

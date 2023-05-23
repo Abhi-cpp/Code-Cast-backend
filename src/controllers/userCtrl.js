@@ -18,23 +18,52 @@ async function verify(body) {
 }
 // signup or signin
 async function login(req, res) {
+    // console.log(req.body)
     try {
-        const payload = await verify(req.body);
-        let user = await User.findOne({ email: payload.email })
-        // it's a new user
-        if (user == null) {
-            user = new User(payload)
-            //! has to disable as google is blocking my gmail login
-            sendwelcomemail(user.email, user.name)
-            await user.save()
+        // token h the do this else do that
+        if (req.body.clientId) {
+            const payload = await verify(req.body);
+            console.log(payload)
+            let user = await User.findOne({ email: payload.email })
+            // it's a new user
+            if (user == null) {
+                user = new User(payload)
+                //! has to disable as google is blocking my gmail login
+                sendwelcomemail(user.email, user.name)
+                await user.save()
+            }
+            else
+                await user.populate('rooms', 'name roomid language timestamps updatedAt')
+            const token = await user.generateAuthToken()
+            res.status(200).send({ user, token })
         }
-        else
+        else {
+            const tmp = req.body;
+            const user = await User.findByCredentials(tmp.email, tmp.password)
             await user.populate('rooms', 'name roomid language timestamps updatedAt')
+            const token = await user.generateAuthToken()
+            console.log('succesfully done');
+            res.status(200).send({ user, token })
+        }
+    }
+    catch (e) {
+        console.log('erro at login', e)
+        res.status(400).send()
+    }
+}
+
+// register user
+async function register(req, res) {
+    try {
+        const user = new User(req.body)
+        if (!user.name || !user.email || !user.password)
+            throw new Error('Name, Email and Password are required')
+        await user.save()
         const token = await user.generateAuthToken()
         res.status(200).send({ user, token })
     }
     catch (e) {
-        console.log('erro at login', e)
+        console.log('error at register user', e)
         res.status(400).send()
     }
 }
@@ -86,5 +115,6 @@ module.exports = {
     login,
     fetch,
     deleteUser,
-    updateUser
+    updateUser,
+    register
 }
