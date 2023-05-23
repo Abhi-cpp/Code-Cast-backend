@@ -3,6 +3,7 @@ const validator = require('validator');
 const { Schema } = mongoose;
 const jwt = require('jsonwebtoken')
 const Room = require('./room')
+const bcrypt = require('bcryptjs')
 
 const userSchema = new Schema({
     name: {
@@ -21,6 +22,10 @@ const userSchema = new Schema({
                 throw new Error('Email is invalid');
             }
         }
+    },
+    password: {
+        type: String,
+        minlength: 6
     },
     avatar: {
         type: String
@@ -81,12 +86,17 @@ const userSchema = new Schema({
     timestamps: true
 });
 
+// execute before saving data to db
+
+
 
 userSchema.methods.toJSON = function () {
     let obj = this.toObject();
     delete obj.createdAt;
     delete obj.updatedAt;
     delete obj.__v;
+    if (obj.password)
+        delete obj.password
     return obj
 }
 
@@ -95,6 +105,24 @@ userSchema.methods.generateAuthToken = async function () {
     const token = jwt.sign({ _id: user._id.toString() }, process.env.JWT_SECRET, { expiresIn: '7 day' })
     return token
 }
+
+userSchema.statics.findByCredentials = async (email, password) => {
+    const user = await User.findOne({ email })
+    if (!user) throw new Error('Wrong email or password')
+    const isMatch = await bcrypt.compare(password, user.password)
+    if (!isMatch) throw new Error('wrong email or password')
+    return user
+}
+
+userSchema.pre('save', async function (next) {
+    const user = this;
+    if (user.password) {
+        if (user.isModified('password')) {
+            user.password = await bcrypt.hash(user.password, 9)
+        }
+    }
+    next()
+})
 
 //* use this only after joining the room collection
 userSchema.pre('remove', async function (next) {
