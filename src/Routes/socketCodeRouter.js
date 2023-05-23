@@ -93,10 +93,10 @@ function mangerRoom(socket, io) {
         socket.to(roomid).emit('Id', { peerId });
     })
 
-    socket.on('drawing', (data) => {
-        // console.log("drawing", data)
-        socket.to(data.roomid).emit('drawing', data);
-    })
+
+    socket.on("drawData", (data) => {
+        socket.broadcast.emit("drawData", data);
+    });
 
 }
 
