@@ -94,6 +94,8 @@ function mangerRoom(socket, io) {
     })
 
 
+
+
     socket.on("drawData", (data) => {
         socket.broadcast.emit("drawData", data);
     });
