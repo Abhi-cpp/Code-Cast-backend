@@ -18,7 +18,6 @@ async function verify(body) {
 }
 // signup or signin
 async function login(req, res) {
-    // console.log(req.body)
     try {
         // token h the do this else do that
         if (req.body.clientId) {
@@ -54,7 +53,13 @@ async function login(req, res) {
 
 // register user
 async function register(req, res) {
+
     try {
+        // check if the email is already registered
+        const already = await User.findOne({ email: req.body.email });
+        if (already) throw new Error('Already');
+
+        // create new user
         const user = new User(req.body)
         if (!user.name || !user.email || !user.password)
             throw new Error('Name, Email and Password are required')
@@ -63,8 +68,9 @@ async function register(req, res) {
         res.status(200).send({ user, token })
     }
     catch (e) {
-        console.log('error at register user', e)
-        res.status(400).send()
+        if (e.contains('Already'))
+            res.status(400).send({ error: e.message })
+
     }
 }
 
