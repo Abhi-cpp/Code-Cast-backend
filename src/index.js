@@ -27,7 +27,6 @@ const connection = {
     count: 0,
     users: []
 }
-// how to send io to socketIo.js
 initSocketIO(io, connection)
 
 
