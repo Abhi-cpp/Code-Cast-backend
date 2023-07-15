@@ -10,7 +10,7 @@ const initSocketIO = require('./initSocket');
 require('dotenv').config()
 const port = process.env.PORT || 1234;
 const bodyParser = require('body-parser');
-
+const axios = require('axios')
 
 const app = express();
 const httpServer = createServer(app);
@@ -36,6 +36,15 @@ app.use(userRouter);
 app.use(roomRouter);
 app.use(codeRouter)
 
+setInterval(() => {
+    axios.get(process.env.BASE_URL)
+        .then((res) => {
+            console.log(res.data);
+        })
+        .catch((err) => {
+            console.log(err);
+        })
+}, 300000);
 
 DBConnect().then(() => {
     console.log("DB connected");
