@@ -8,6 +8,6 @@ userRouter.post(url.USERS.LOGIN, userCtrl.login)
 userRouter.get(url.USERS.FETCH, auth, userCtrl.fetch)
 userRouter.delete(url.USERS.DELETE, auth, userCtrl.deleteUser)
 userRouter.patch(url.USERS.UPDATE, auth, userCtrl.updateUser)
-
+userRouter.post(url.USERS.REGISTER, userCtrl.register)
 
 module.exports = userRouter
