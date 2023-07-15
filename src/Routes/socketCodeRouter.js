@@ -88,14 +88,23 @@ function mangerRoom(socket, io) {
     });
 
 
-    socket.on('Id', ({ roomid, peerId }) => {
+    socket.on('Id', ({ roomid, peerId, name }) => {
         console.log("peerId", peerId)
-        socket.to(roomid).emit('Id', { peerId });
+        socket.to(roomid).emit('Id', { peerId, name });
     })
 
 
     socket.on("drawData", (data) => {
-        socket.broadcast.emit("drawData", data);
+        socket.to(data.roomId).emit("drawData", data);
+    });
+
+    socket.on("start-video", (data) => {
+        socket.broadcast.emit("start-video", data);
+    });
+
+    socket.on("quit-video", (data) => {
+        console.log(data);
+        socket.to(data.roomId).emit("quit-video", data.peerId);
     });
 
 }
