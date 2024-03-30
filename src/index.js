@@ -8,7 +8,7 @@ const { Server } = require("socket.io")
 const cors = require('cors');
 const initSocketIO = require('./initSocket');
 require('dotenv').config()
-const port = process.env.PORT || 1234;
+const port = process.env.PORT || 8080;
 const bodyParser = require('body-parser');
 
 

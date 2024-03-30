@@ -18,6 +18,7 @@ async function verify(body) {
 }
 // signup or signin
 async function login(req, res) {
+    console.log("login request");
     try {
         // token h the do this else do that
         if (req.body.clientId) {

@@ -1,15 +1,14 @@
-const mangeRoom = require('./Routes/socketCodeRouter');
+const manageRoom = require('./Routes/socketCodeRouter');
 
 
 const initSocketIO = (io, connection) => {
 
     io.on('connection', (socket) => {
-
         ++connection.count;
         connection.users.push(socket.id);
         console.log(`A user connected. Total connections: ${connection.count}`);
 
-        mangeRoom(socket, io);
+        manageRoom(socket, io);
 
         socket.on('disconnect', () => {
 

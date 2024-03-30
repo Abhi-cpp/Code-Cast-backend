@@ -49,6 +49,7 @@ async function execute(req, res) {
         console.log(response.data)
         return res.status(200).send(response.data);
     } catch (error) {
+        console.log(error);
         console.log('error in code execute');
         return res.status(500).send({ error: error });
     }
