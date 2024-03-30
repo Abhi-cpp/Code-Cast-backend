@@ -87,7 +87,6 @@ function manageRoom(socket, io) {
     });
 
 
-    // newly added
     socket.on("drawData", (data) => {
         socket.to(data.roomId).emit("drawData", data);
     });
