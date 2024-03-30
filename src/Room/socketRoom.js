@@ -49,7 +49,7 @@ function getRoom(roomid) {
     return rooms[roomid] ? rooms[roomid] : null;
 }
 
-function updateRoom(roomid, patch) {
+function updateRoomCode(roomid, patch) {
     if (rooms[roomid]) {
         try {
             const code = rooms[roomid].code;
@@ -65,9 +65,9 @@ function updateRoom(roomid, patch) {
     }
 }
 
-function updateRoomIO(roomid, input = '', output = '', language = '') {
+function updateCodeEditorCredentials(roomid, input = '', output = '', language = '') {
     if (rooms[roomid]) {
-        console.log('updateRoomIo', input, output, language);
+        console.log('update code editor credentials', input, output, language);
         try {
             rooms[roomid].input = input;
             rooms[roomid].output = output;
@@ -94,7 +94,7 @@ module.exports = {
     addRoomUser,
     removeRoomUser,
     getRoom,
-    updateRoom,
-    updateRoomIO,
+    updateRoomCode,
+    updateCodeEditorCredentials,
     deleteUser
 };

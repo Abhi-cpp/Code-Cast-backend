@@ -30,7 +30,7 @@ async function fetch(req, res) {
     }
 }
 
-async function updateRoom(req, res) {
+async function updateRoomInDatabase(req, res) {
     try {
         const roomid = req.body.room.roomid;
         const room = await Room.findOneAndUpdate({
@@ -69,6 +69,6 @@ async function deleteRoom(req, res) {
 module.exports = {
     createRoom,
     fetch,
-    updateRoom,
+    updateRoomInDatabase,
     deleteRoom
 }
