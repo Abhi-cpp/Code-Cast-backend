@@ -88,6 +88,7 @@ function manageRoom(socket, io) {
 
 
     socket.on("drawData", (data) => {
+        console.log("drawing data", data.roomId);
         socket.to(data.roomId).emit("drawData", data);
     });
 
