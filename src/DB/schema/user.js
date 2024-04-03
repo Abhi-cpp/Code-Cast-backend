@@ -86,9 +86,6 @@ const userSchema = new Schema({
     timestamps: true
 });
 
-// execute before saving data to db
-
-
 
 userSchema.methods.toJSON = function () {
     let obj = this.toObject();

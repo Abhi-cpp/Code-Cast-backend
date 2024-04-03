@@ -11,7 +11,6 @@ const initSocketIO = (io, connection) => {
         manageRoom(socket, io);
 
         socket.on('disconnect', () => {
-
             connection.count--;
             connection.users = connection.users.filter((user) => user !== socket.id);
             console.log(`A user disconnected. Total connections: ${connection.count}`);

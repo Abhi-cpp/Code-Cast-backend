@@ -1,4 +1,4 @@
-const { createRoom, addRoomUser, removeRoomUser, getRoom, updateRoomCode, updateCodeEditorCredentials, deleteUser } = require('../Room/socketRoom');
+const { createRoom, addRoomUser, removeRoomUser, getRoom, updateRoomCode, updateCodeEditorCredentials, deleteUser, updateUserSocketMap, userSocketMap } = require('../Room/socketRoom');
 
 function manageRoom(socket, io) {
 
@@ -15,11 +15,8 @@ function manageRoom(socket, io) {
 
             await socket.join(roomid);
 
-            socket.emit('join', { msg: `Welcome to ${roomName}`, room: getRoom(roomid) });
-
+            socket.emit('join', { msg: `Welcome to ${roomName}`, room: getRoom(roomid), socketId });
             socket.to(roomid).emit('userJoin', { msg: `New user joined ${name}`, newUser: { id: socketId, name, avatar } });
-
-
         } catch (err) {
             console.log(err);
             socket.emit('error', { error: err });
@@ -51,7 +48,6 @@ function manageRoom(socket, io) {
 
     socket.on('updateIO', ({ roomid, input, output, language }) => {
         try {
-            console.log('updateIO', input, output, language)
             updateCodeEditorCredentials(roomid, input, output, language);
             socket.to(roomid).emit('updateIO', {
                 newinput: input,
@@ -66,7 +62,6 @@ function manageRoom(socket, io) {
 
     socket.on('getRoom', ({ roomid }) => {
         try {
-            // emit to everyone in the room
             io.in(roomid).emit('getRoom', { room: getRoom(roomid) });
         } catch (err) {
             console.log(err);
@@ -75,7 +70,12 @@ function manageRoom(socket, io) {
     })
 
     socket.on('disconnect', () => {
-        console.log('user disconnected');
+        for (let [key, value] of userSocketMap.entries()) {
+            if (value === socketId) {
+                userSocketMap.delete(key);
+                break;
+            }
+        }
         let roomid = deleteUser(socketId);
         if (roomid !== null) {
             const name = removeRoomUser(roomid, socketId);
@@ -88,7 +88,6 @@ function manageRoom(socket, io) {
 
 
     socket.on("drawData", (data) => {
-        console.log("drawing data", data.roomId);
         socket.to(data.roomId).emit("drawData", data);
     });
 
@@ -112,6 +111,24 @@ function manageRoom(socket, io) {
 
     socket.on("toggle-audio", (data) => {
         socket.broadcast.to(data.roomID).emit("toggle-audio", { userID: data.userID });
+    })
+
+    socket.on("map socket", ({ userID }) => {
+        userSocketMap.set(userID, socketId);
+    })
+
+    socket.on("join permission", ({ room, user }) => {
+        let owner = userSocketMap.get(room.owner);
+        console.log(socketId);
+        io.to(owner).emit("join permission", { room, user, senderID: socketId });
+    })
+
+    socket.on("accept permission", ({ senderID }) => {
+        io.to(senderID).emit("permission accepted")
+    })
+
+    socket.on("reject permission", ({ senderID }) => {
+        io.to(senderID).emit("permission rejected")
     })
 
 }

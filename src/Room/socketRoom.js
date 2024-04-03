@@ -1,6 +1,8 @@
 const diff = require('diff-match-patch');
 const dmp = new diff.diff_match_patch();
 let rooms = {};
+const userSocketMap = new Map();
+
 
 function createRoom(roomid, roomName, code, language, input, output) {
     if (!rooms[roomid]) {
@@ -89,6 +91,10 @@ function deleteUser(userId) {
     return null;
 }
 
+function updateUserSocketMap(userId, socketId) {
+    userSocketMap.set(userId, socketId);
+}
+
 module.exports = {
     createRoom,
     addRoomUser,
@@ -96,5 +102,7 @@ module.exports = {
     getRoom,
     updateRoomCode,
     updateCodeEditorCredentials,
-    deleteUser
+    deleteUser,
+    updateUserSocketMap,
+    userSocketMap
 };
