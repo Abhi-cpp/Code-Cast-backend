@@ -69,8 +69,8 @@ async function register(req, res) {
         res.status(200).send({ user, token })
     }
     catch (e) {
-        if (e.contains('Already'))
-            res.status(400).send({ error: e.message })
+        // if (e.includes('Already'))
+        res.status(400).send({ error: e.message })
 
     }
 }
