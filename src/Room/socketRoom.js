@@ -1,6 +1,8 @@
 const diff = require('diff-match-patch');
 const dmp = new diff.diff_match_patch();
 let rooms = {};
+const userSocketMap = new Map();
+
 
 function createRoom(roomid, roomName, code, language, input, output) {
     if (!rooms[roomid]) {
@@ -49,7 +51,7 @@ function getRoom(roomid) {
     return rooms[roomid] ? rooms[roomid] : null;
 }
 
-function updateRoom(roomid, patch) {
+function updateRoomCode(roomid, patch) {
     if (rooms[roomid]) {
         try {
             const code = rooms[roomid].code;
@@ -65,9 +67,9 @@ function updateRoom(roomid, patch) {
     }
 }
 
-function updateRoomIO(roomid, input = '', output = '', language = '') {
+function updateCodeEditorCredentials(roomid, input = '', output = '', language = '') {
     if (rooms[roomid]) {
-        console.log('updateRoomIo', input, output, language);
+        console.log('update code editor credentials', input, output, language);
         try {
             rooms[roomid].input = input;
             rooms[roomid].output = output;
@@ -89,12 +91,18 @@ function deleteUser(userId) {
     return null;
 }
 
+function updateUserSocketMap(userId, socketId) {
+    userSocketMap.set(userId, socketId);
+}
+
 module.exports = {
     createRoom,
     addRoomUser,
     removeRoomUser,
     getRoom,
-    updateRoom,
-    updateRoomIO,
-    deleteUser
+    updateRoomCode,
+    updateCodeEditorCredentials,
+    deleteUser,
+    updateUserSocketMap,
+    userSocketMap
 };

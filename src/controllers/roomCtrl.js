@@ -6,9 +6,10 @@ async function createRoom(req, res) {
         const room = new Room(req.room)
         await room.save()
         const user = await User.findById(req.user._id)
+        console.log(room.owner);
         user.rooms.push(room._id)
         user.save()
-        res.status(200).send(room)
+        res.status(200).send({ room: room })
     }
     catch (e) {
         console.log('error in createRoom', e)
@@ -22,7 +23,7 @@ async function fetch(req, res) {
         const room = await Room.findOne({ roomid })
         if (!room)
             return res.status(404).send();
-        res.status(200).send(room)
+        res.status(200).send({ room: room })
     }
     catch (e) {
         console.log('error in fetch', e)
@@ -30,7 +31,7 @@ async function fetch(req, res) {
     }
 }
 
-async function updateRoom(req, res) {
+async function updateRoomInDatabase(req, res) {
     try {
         const roomid = req.body.room.roomid;
         const room = await Room.findOneAndUpdate({
@@ -69,6 +70,6 @@ async function deleteRoom(req, res) {
 module.exports = {
     createRoom,
     fetch,
-    updateRoom,
+    updateRoomInDatabase,
     deleteRoom
 }

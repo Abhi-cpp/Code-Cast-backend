@@ -8,7 +8,7 @@ const url = require('./../utils/constants/appConstants')
 
 roomRouter.post(url.ROOMS.CREATE, auth, roomData, roomCtrl.createRoom)
 roomRouter.get(url.ROOMS.FETCH, auth, roomCtrl.fetch)
-roomRouter.patch(url.ROOMS.UPDATE, auth, roomCtrl.updateRoom)
+roomRouter.patch(url.ROOMS.UPDATE, auth, roomCtrl.updateRoomInDatabase)
 roomRouter.delete(url.ROOMS.DELETE, auth, roomCtrl.deleteRoom)
 
 
