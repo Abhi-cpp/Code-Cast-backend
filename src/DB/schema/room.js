@@ -8,7 +8,7 @@ const roomSchema = new Schema({
         trim: true,
         immutable: true,
     },
-    roomid: {
+    roomId: {
         type: String,
         required: true,
         trim: true,

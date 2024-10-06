@@ -4,11 +4,11 @@ let rooms = {};
 const userSocketMap = new Map();
 
 
-function createRoom(roomid, roomName, code, language, input, output) {
-    if (!rooms[roomid]) {
-        rooms[roomid] = {
+function createRoom(roomId, roomName, code, language, input, output) {
+    if (!rooms[roomId]) {
+        rooms[roomId] = {
             roomName,
-            roomid,
+            roomId,
             users: [],
             code,
             language,
@@ -18,23 +18,23 @@ function createRoom(roomid, roomName, code, language, input, output) {
     }
 }
 
-function deleteRoom(roomid) {
-    console.log('dateleting room', roomid)
-    if (rooms[roomid]) {
-        delete rooms[roomid];
+function deleteRoom(roomId) {
+    console.log('dateleting room', roomId)
+    if (rooms[roomId]) {
+        delete rooms[roomId];
     }
 }
 
-function addRoomUser(roomid, user) {
-    if (rooms[roomid]) {
-        rooms[roomid].users.push(user);
+function addRoomUser(roomId, user) {
+    if (rooms[roomId]) {
+        rooms[roomId].users.push(user);
     }
 }
 
-function removeRoomUser(roomid, userId) {
+function removeRoomUser(roomId, userId) {
     let userName;
-    if (rooms[roomid]) {
-        rooms[roomid].users = rooms[roomid].users.filter(user => {
+    if (rooms[roomId]) {
+        rooms[roomId].users = rooms[roomId].users.filter(user => {
             if (user.id === userId) {
                 userName = user.name;
                 return false;
@@ -42,22 +42,22 @@ function removeRoomUser(roomid, userId) {
             return true;
         });
     }
-    if (rooms[roomid].users.length === 0)
-        deleteRoom(roomid);
+    if (rooms[roomId].users.length === 0)
+        deleteRoom(roomId);
     return userName;
 }
 
-function getRoom(roomid) {
-    return rooms[roomid] ? rooms[roomid] : null;
+function getRoom(roomId) {
+    return rooms[roomId] ? rooms[roomId] : null;
 }
 
-function updateRoomCode(roomid, patch) {
-    if (rooms[roomid]) {
+function updateRoomCode(roomId, patch) {
+    if (rooms[roomId]) {
         try {
-            const code = rooms[roomid].code;
+            const code = rooms[roomId].code;
             const [newCode, result] = dmp.patch_apply(patch, code);
             if (result[0])
-                rooms[roomid].code = newCode;
+                rooms[roomId].code = newCode;
             else
                 console.log('patch failed');
         }
@@ -67,24 +67,24 @@ function updateRoomCode(roomid, patch) {
     }
 }
 
-function updateCodeEditorCredentials(roomid, input = '', output = '', language = '') {
-    if (rooms[roomid]) {
+function updateCodeEditorCredentials(roomId, input = '', output = '', language = '') {
+    if (rooms[roomId]) {
         console.log('update code editor credentials', input, output, language);
         try {
-            rooms[roomid].input = input;
-            rooms[roomid].output = output;
-            rooms[roomid].language = language;
+            rooms[roomId].input = input;
+            rooms[roomId].output = output;
+            rooms[roomId].language = language;
         } catch (e) { console.log(e) }
 
-        console.log('after update', rooms[roomid])
+        console.log('after update', rooms[roomId])
     }
 }
 
 function deleteUser(userId) {
-    for (let roomid in rooms) {
-        for (let user in rooms[roomid].users) {
-            if (rooms[roomid].users[user].id === userId) {
-                return roomid;
+    for (let roomId in rooms) {
+        for (let user in rooms[roomId].users) {
+            if (rooms[roomId].users[user].id === userId) {
+                return roomId;
             }
         }
     }

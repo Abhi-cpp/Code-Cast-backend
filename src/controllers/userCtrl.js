@@ -1,6 +1,6 @@
-const User = require('./../DB/schema/user');
+const User = require('src/DB/schema/user');
 const { OAuth2Client } = require('google-auth-library');
-const sendwelcomemail = require('./../middleware/email');
+const sendwelcomemail = require('src/middleware/email');
 
 // google auth2
 async function verify(body) {
@@ -33,16 +33,20 @@ async function login(req, res) {
                 await user.save();
             }
             else
-                await user.populate('rooms', 'name roomid language timestamps updatedAt');
+                await user.populate('rooms', 'name roomId language timestamps updatedAt');
             const token = await user.generateAuthToken();
+            user.id = user._id;
+            delete user._id;
             res.status(200).send({ user, token });
         }
         else {
             const tmp = req.body;
             const user = await User.findByCredentials(tmp.email, tmp.password);
-            await user.populate('rooms', 'name roomid language timestamps updatedAt');
+            await user.populate('rooms', 'name roomId language timestamps updatedAt');
             const token = await user.generateAuthToken();
             console.log('succesfully done');
+            user.id = user._id;
+            delete user._id;
             res.status(200).send({ user, token });
         }
     }
@@ -65,6 +69,8 @@ async function register(req, res) {
         const user = new User(req.body);
         await user.save();
         const token = await user.generateAuthToken();
+        user.id = user._id;
+        delete user._id;
         res.status(200).send({ user, token });
     }
     catch (e) {
@@ -74,10 +80,11 @@ async function register(req, res) {
     }
 }
 
+// @#! doubt
 // giving user back it's data after jwt verification
 async function fetch(req, res) {
     try {
-        await req.user.populate('rooms', 'name roomid language timestamps updatedAt');
+        await req.user.populate('rooms', 'name roomId language timestamps updatedAt');
         res.status(200).send({ user: req.user, token: req.token });
     }
     catch (e) {
@@ -90,10 +97,13 @@ async function fetch(req, res) {
 // update users data
 async function updateUser(req, res) {
     try {
+        req.body.user._id = req.body.user.id;
+        delete req.body.user.id;
         const user = await User.findByIdAndUpdate(req.user._id, {
             $set: req.body.user
         }, { new: true, runValidators: true });
-
+        user.id = user._id;
+        delete user._id;
         res.status(200).send(user);
     }
     catch (e) {
@@ -102,17 +112,7 @@ async function updateUser(req, res) {
     }
 }
 
-// delete user
-async function deleteUser(req, res) {
-    try {
-        await req.user.remove();
-        res.status(200).send('User deleted successfully');
-    }
-    catch (e) {
-        console.log('error at delete user', e);
-        res.status(500).send();
-    }
-}
+
 
 
 
@@ -120,7 +120,6 @@ async function deleteUser(req, res) {
 module.exports = {
     login,
     fetch,
-    deleteUser,
     updateUser,
     register
 };

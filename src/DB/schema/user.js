@@ -99,7 +99,7 @@ userSchema.methods.toJSON = function () {
 
 userSchema.methods.generateAuthToken = async function () {
     const user = this
-    const token = jwt.sign({ _id: user._id.toString() }, process.env.JWT_SECRET, { expiresIn: '7 day' })
+    const token = jwt.sign({ id: user.id.toString() }, process.env.JWT_SECRET, { expiresIn: '7 day' })
     return token
 }
 
@@ -121,6 +121,7 @@ userSchema.pre('save', async function (next) {
     next()
 })
 
+// #@! doubt
 //* use this only after joining the room collection
 userSchema.pre('remove', async function (next) {
     const user = this

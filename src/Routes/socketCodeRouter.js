@@ -1,56 +1,56 @@
-const { createRoom, addRoomUser, removeRoomUser, getRoom, updateRoomCode, updateCodeEditorCredentials, deleteUser, updateUserSocketMap, userSocketMap } = require('../Room/socketRoom');
+const { createRoom, addRoomUser, removeRoomUser, getRoom, updateRoomCode, updateCodeEditorCredentials, deleteUser, updateUserSocketMap, userSocketMap } = require('src/Room/socketRoom');
 
 function manageRoom(socket, io) {
 
     const { id: socketId } = socket;
 
-    socket.on('join', async ({ roomName = 'Room X', roomid, name, email, code = '', language = 'javascript', input = '', output = '', avatar = '' }) => {
+    socket.on('join', async ({ roomName = 'Room X', roomId, name, email, code = '', language = 'javascript', input = '', output = '', avatar = '' }) => {
         try {
             console.log("new user joined");
             if (!name) {
                 throw new Error('Invalid data');
             }
-            createRoom(roomid, roomName, code, language, input, output);
+            createRoom(roomId, roomName, code, language, input, output);
 
-            addRoomUser(roomid, { id: socketId, name, avatar });
+            addRoomUser(roomId, { id: socketId, name, avatar });
 
-            await socket.join(roomid);
+            await socket.join(roomId);
 
-            socket.emit('join', { msg: `Welcome to ${roomName}`, room: getRoom(roomid), socketId });
-            socket.to(roomid).emit('userJoin', { msg: `New user joined ${name}`, newUser: { id: socketId, name, avatar, email } });
+            socket.emit('join', { msg: `Welcome to ${roomName}`, room: getRoom(roomId), socketId });
+            socket.to(roomId).emit('userJoin', { msg: `New user joined ${name}`, newUser: { id: socketId, name, avatar, email } });
         } catch (err) {
             console.log(err);
             socket.emit('error', { error: err });
         }
     });
 
-    socket.on('update', ({ roomid, patch }) => {
+    socket.on('update', ({ roomId, patch }) => {
         try {
-            updateRoomCode(roomid, patch);
-            socket.to(roomid).emit('update', { patch });
+            updateRoomCode(roomId, patch);
+            socket.to(roomId).emit('update', { patch });
         } catch (err) {
             console.log(err);
             socket.emit('error', { error: err });
         }
     });
 
-    socket.on('leave', ({ roomid }) => {
+    socket.on('leave', ({ roomId }) => {
         try {
-            const name = removeRoomUser(roomid, socketId);
-            socket.leave(roomid);
-            io.to(roomid).emit('userLeft', { msg: `${name} left the room`, userLeft: { id: socketId, name, avatar: '', email: "" } });
+            const name = removeRoomUser(roomId, socketId);
+            socket.leave(roomId);
+            io.to(roomId).emit('userLeft', { msg: `${name} left the room`, userLeft: { id: socketId, name, avatar: '', email: "" } });
             console.log('user left', name);
-            socket.to(roomid).emit('user left video call', { msg: `${name} left the room`, userID: socketId });
+            socket.to(roomId).emit('user left video call', { msg: `${name} left the room`, userId: socketId });
         } catch (err) {
             console.log(err);
             socket.emit('error', { error: err });
         }
     });
 
-    socket.on('updateIO', ({ roomid, input, output, language }) => {
+    socket.on('updateIO', ({ roomId, input, output, language }) => {
         try {
-            updateCodeEditorCredentials(roomid, input, output, language);
-            socket.to(roomid).emit('updateIO', {
+            updateCodeEditorCredentials(roomId, input, output, language);
+            socket.to(roomId).emit('updateIO', {
                 newinput: input,
                 newoutput: output,
                 newlanguage: language
@@ -61,9 +61,9 @@ function manageRoom(socket, io) {
         }
     });
 
-    socket.on('getRoom', ({ roomid }) => {
+    socket.on('getRoom', ({ roomId }) => {
         try {
-            io.in(roomid).emit('getRoom', { room: getRoom(roomid) });
+            io.in(roomId).emit('getRoom', { room: getRoom(roomId) });
         } catch (err) {
             console.log(err);
             socket.emit('error', { error: err });
@@ -77,13 +77,13 @@ function manageRoom(socket, io) {
                 break;
             }
         }
-        let roomid = deleteUser(socketId);
-        if (roomid !== null) {
-            const name = removeRoomUser(roomid, socketId);
-            socket.leave(roomid);
-            io.to(roomid).emit('userLeft', { msg: `${name} left the room`, userLeft: { id: socketId, name, avatar: "", email: "" } });
+        let roomId = deleteUser(socketId);
+        if (roomId !== null) {
+            const name = removeRoomUser(roomId, socketId);
+            socket.leave(roomId);
+            io.to(roomId).emit('userLeft', { msg: `${name} left the room`, userLeft: { id: socketId, name, avatar: "", email: "" } });
             console.log('user left', name);
-            socket.to(roomid).emit('user left video call', { msg: `${name} left the room`, userID: socketId });
+            socket.to(roomId).emit('user left video call', { msg: `${name} left the room`, userId: socketId });
         }
     });
 
@@ -92,8 +92,8 @@ function manageRoom(socket, io) {
         socket.to(data.roomId).emit("drawData", data);
     });
 
-    socket.on("start-video", ({ roomID }) => {
-        let allUsers = getRoom(roomID).users;
+    socket.on("start-video", ({ roomId }) => {
+        let allUsers = getRoom(roomId).users;
         allUsers = allUsers.filter(user => user.id !== socketId);
         socket.emit('allUsers', allUsers);
     });
@@ -107,15 +107,15 @@ function manageRoom(socket, io) {
     });
 
     socket.on("toggle-video", (data) => {
-        socket.broadcast.to(data.roomID).emit("toggle-video", { userID: data.userID });
+        socket.broadcast.to(data.roomId).emit("toggle-video", { userId: data.userId });
     });
 
     socket.on("toggle-audio", (data) => {
-        socket.broadcast.to(data.roomID).emit("toggle-audio", { userID: data.userID });
+        socket.broadcast.to(data.roomId).emit("toggle-audio", { userId: data.userId });
     });
 
-    socket.on("map socket", ({ userID }) => {
-        userSocketMap.set(userID, socketId);
+    socket.on("map socket", ({ userId }) => {
+        userSocketMap.set(userId, socketId);
     });
 
     socket.on("join permission", ({ room, user }) => {

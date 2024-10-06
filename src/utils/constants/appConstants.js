@@ -3,7 +3,6 @@ module.exports = {
     USERS: {
         LOGIN: '/users/login',
         FETCH: '/users/fetch',
-        DELETE: '/users/delete',
         UPDATE: '/users/update',
         REGISTER: '/users/register',
     },

@@ -1,12 +1,11 @@
-const Room = require('./../DB/schema/room')
-const User = require('./../DB/schema/user')
+const Room = require('src/DB/schema/room')
+const User = require('src/DB/schema/user')
 
 async function createRoom(req, res) {
     try {
         const room = new Room(req.room)
         await room.save()
-        const user = await User.findById(req.user._id)
-        console.log(room.owner);
+        const user = await User.findById(req.user.id)
         user.rooms.push(room._id)
         user.save()
         res.status(200).send({ room: room })
@@ -19,11 +18,13 @@ async function createRoom(req, res) {
 
 async function fetch(req, res) {
     try {
-        const roomid = (req.query.id);
-        const room = await Room.findOne({ roomid })
+        const roomId = (req.query.id);
+        const room = await Room.findOne({ roomId })
         if (!room)
             return res.status(404).send();
-        res.status(200).send({ room: room })
+        room.id = room._id
+        delete room._id
+        res.status(200).send({ room })
     }
     catch (e) {
         console.log('error in fetch', e)
@@ -33,9 +34,9 @@ async function fetch(req, res) {
 
 async function updateRoomInDatabase(req, res) {
     try {
-        const roomid = req.body.room.roomid;
+        const roomId = req.body.room.roomId;
         const room = await Room.findOneAndUpdate({
-            roomid
+            roomId
         }, {
             name: req.body.room.name || "",
             code: req.body.room.code || "",
@@ -44,7 +45,6 @@ async function updateRoomInDatabase(req, res) {
             new: true,
             runValidators: true
         })
-
         res.status(200).send(room)
     }
     catch (e) {
@@ -55,8 +55,8 @@ async function updateRoomInDatabase(req, res) {
 
 async function deleteRoom(req, res) {
     try {
-        const _id = req.body.id;
-        const room = await Room.findByIdAndDelete(_id)
+        const id = req.body.id;
+        const room = await Room.findByIdAndDelete(id)
         if (!room)
             return res.status(404).send();
         res.status(200).send(room)
