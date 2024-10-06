@@ -1,6 +1,6 @@
-const User = require('src/DB/schema/user');
+const User = require('./../DB/schema/user');
 const { OAuth2Client } = require('google-auth-library');
-const sendwelcomemail = require('src/middleware/email');
+const sendwelcomemail = require('./../middleware/email');
 
 // google auth2
 async function verify(body) {
@@ -35,8 +35,8 @@ async function login(req, res) {
             else
                 await user.populate('rooms', 'name roomId language timestamps updatedAt');
             const token = await user.generateAuthToken();
-            user.id = user._id;
-            delete user._id;
+            user["_doc"].id = user["_doc"]._id;
+            delete user["_doc"]._id;
             res.status(200).send({ user, token });
         }
         else {
@@ -45,8 +45,8 @@ async function login(req, res) {
             await user.populate('rooms', 'name roomId language timestamps updatedAt');
             const token = await user.generateAuthToken();
             console.log('succesfully done');
-            user.id = user._id;
-            delete user._id;
+            user["_doc"].id = user["_doc"]._id;
+            delete user["_doc"]._id;
             res.status(200).send({ user, token });
         }
     }
@@ -69,8 +69,8 @@ async function register(req, res) {
         const user = new User(req.body);
         await user.save();
         const token = await user.generateAuthToken();
-        user.id = user._id;
-        delete user._id;
+        user["_doc"].id = user["_doc"]._id;
+        delete user["_doc"]._id;
         res.status(200).send({ user, token });
     }
     catch (e) {
@@ -80,11 +80,12 @@ async function register(req, res) {
     }
 }
 
-// @#! doubt
 // giving user back it's data after jwt verification
 async function fetch(req, res) {
     try {
         await req.user.populate('rooms', 'name roomId language timestamps updatedAt');
+        req.user["_doc"].id = req.user["_doc"]._id;
+        delete req.user["_doc"]._id;
         res.status(200).send({ user: req.user, token: req.token });
     }
     catch (e) {
@@ -102,8 +103,8 @@ async function updateUser(req, res) {
         const user = await User.findByIdAndUpdate(req.user._id, {
             $set: req.body.user
         }, { new: true, runValidators: true });
-        user.id = user._id;
-        delete user._id;
+        user["_doc"].id = user["_doc"]._id;
+        delete user["_doc"]._id;
         res.status(200).send(user);
     }
     catch (e) {
